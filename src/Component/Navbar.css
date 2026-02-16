@@ -1,6 +1,6 @@
 .navbar {
   background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0, 08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   position: sticky;
   top: 0;
   z-index: 1000;
@@ -13,6 +13,7 @@
     -apple-system,
     sans-serif;
 }
+
 .navbar-container {
   width: 100%;
   max-width: 1280px;
@@ -22,6 +23,7 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .navbar-logo {
   display: flex;
   align-items: center;
@@ -29,13 +31,16 @@
   cursor: pointer;
   transition: transform 0.2s;
 }
+
 .navbar-logo:hover {
   transform: scale(1.02);
 }
+
 .logo-icon {
-  font-size: 2erm;
+  font-size: 2rem;
   color: #6366f1;
 }
+
 .logo-text {
   font-size: 1.5rem;
   font-weight: 800;
@@ -45,11 +50,13 @@
   -webkit-text-fill-color: transparent;
   letter-spacing: -0.5px;
 }
+
 .navbar-links {
   display: flex;
   gap: 1.5rem;
 }
-.nav-item {
+
+.navbar-item {
   text-decoration: none;
   color: #4b5563;
   font-weight: 500;
@@ -61,41 +68,48 @@
   border-radius: 8px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-item:hover {
+
+.navbar-item:hover {
   background: #f3f4f6;
   color: #6366f1;
 }
-.nav-item.active {
-  background: #f3f4f6;
+
+.navbar-item.active {
+  background: #eef2ff;
   color: #6366f1;
 }
+
 .nav-icon {
   font-size: 1.1rem;
 }
+
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
-.user-name{
-    font-weight: 600;
-    color: #374151;
-    font-size: 0.9rem;
+
+.user-name {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.95rem;
 }
-.logout-btn{
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #eda0b4;
-    color: #dc2626;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fee2e2;
+  color: #dc2626;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
-.logout-btn:hover{
-    background: #eda0b4;
-    transform: translateY(-1px);
+
+.logout-btn:hover {
+  background: #fecaca;
+  transform: translateY(-1px);
 }

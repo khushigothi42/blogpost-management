@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaCloudUploadAlt,
   FaHeading,
@@ -7,22 +7,19 @@ import {
   FaTimes,
   FaUser,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import Navbar from "../component/Navbar";
 import "./CreatePost.css";
 
-const CreatePost = () => {
+const EditPost = () => {
+  const { id } = useParams(); // get post id from URL
   const navigate = useNavigate();
   const fileInput = useRef(null);
 
-  // Get current user
-  const authData = JSON.parse(localStorage.getItem("authData") || "{}");
-  const defaultAuthor = authData?.username || "User";
-
   const [formData, setFormData] = useState({
     title: "",
-    author: defaultAuthor,
+    author: "",
     description: "",
     imageUrl: "",
   });
@@ -31,7 +28,32 @@ const CreatePost = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Handle normal input change
+  // 🔹 Fetch existing post
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/posts/${id}`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+
+        setFormData({
+          title: data.title,
+          author: data.author,
+          description: data.description,
+          imageUrl: data.image,
+        });
+
+        setImagePreview(data.image);
+      } catch (error) {
+        toast.error("Failed to load post");
+        navigate("/dashboard");
+      }
+    };
+
+    fetchPost();
+  }, [id, navigate]);
+
+  // 🔹 Handle input change
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -39,14 +61,14 @@ const CreatePost = () => {
     });
   };
 
-  // Handle URL image
+  // 🔹 Handle Image URL
   const handleImageUrlChange = (e) => {
     const url = e.target.value;
     setFormData({ ...formData, imageUrl: url });
     setImagePreview(url || null);
   };
 
-  // Handle File Upload
+  // 🔹 Handle File Upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -59,7 +81,7 @@ const CreatePost = () => {
     reader.readAsDataURL(file);
   };
 
-  // Remove Image
+  // 🔹 Remove Image
   const removeImage = () => {
     setImagePreview(null);
     setFormData({ ...formData, imageUrl: "" });
@@ -68,57 +90,40 @@ const CreatePost = () => {
     }
   };
 
-  // Submit Form
+  // 🔹 Submit Updated Post
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const newPost = {
-        title: formData.title,
-        author: formData.author,
-        description: formData.description,
+      const updatedPost = {
+        ...formData,
         image:
           formData.imageUrl ||
           "https://via.placeholder.com/600x400",
-        date: new Date().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
-        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
-      const response = await fetch("http://localhost:3000/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPost),
-      });
+      const response = await fetch(
+        `http://localhost:3000/posts/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedPost),
+        }
+      );
 
       if (!response.ok) throw new Error();
 
-      toast.success("Post created successfully!");
+      toast.success("Post updated successfully!");
       navigate("/dashboard");
     } catch (error) {
-      toast.error("Failed to create post");
+      toast.error("Failed to update post");
     } finally {
       setLoading(false);
     }
-  };
-
-  // Clear Form
-  const handleClearForm = () => {
-    setFormData({
-      title: "",
-      author: defaultAuthor,
-      description: "",
-      imageUrl: "",
-    });
-    setImagePreview(null);
-    setImageTab("url");
-    toast.info("Form cleared");
   };
 
   return (
@@ -132,8 +137,8 @@ const CreatePost = () => {
 
       <div className="create-post-container">
         <header className="form-header">
-          <h1>Create New Post</h1>
-          <p>Share your thoughts and stories with the world</p>
+          <h1>Edit Post</h1>
+          <p>Update your post details</p>
         </header>
 
         <div className="post-form-card">
@@ -182,7 +187,7 @@ const CreatePost = () => {
               />
             </div>
 
-            {/* Cover Image */}
+            {/* Image Section */}
             <div className="form-group">
               <label>Cover Image</label>
 
@@ -261,15 +266,15 @@ const CreatePost = () => {
                 disabled={loading}
               >
                 <FaRegPaperPlane />
-                {loading ? " Publishing..." : " Publish Post"}
+                {loading ? " Updating..." : " Update Post"}
               </button>
 
               <button
                 type="button"
                 className="cancel-btn"
-                onClick={handleClearForm}
+                onClick={() => navigate("/dashboard")}
               >
-                Clear Form
+                Cancel
               </button>
             </div>
 
@@ -280,4 +285,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default EditPost;

@@ -1,196 +1,205 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
-function Register() {
-  const [regData, setRegData] = useState({
+const Register = () => {
+
+  const [loginData, setLoginData] = useState({
     name: "",
     email: "",
     phone: "",
     password: "",
-    conPassword: "",
+    Conform_pass: ""
   });
-
   const [showPassword, setShowPassword] = useState(false);
+const [showConformPassword, setShowConformPassword] = useState(false);
 
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({})
+  const navigate = useNavigate()
 
-  const [error, setError] = useState({});
+  // Login
+const validate = () => {
+  const newErrors = {};
 
-  const handleChange = (e) => {
-    setRegData({
-      ...regData,
+  if (!loginData.name.trim()) {
+    newErrors.name = "Full name is required.";
+  } else if (loginData.name.length <= 6) {
+    newErrors.name = "Minimum 6 characters required.";
+  }
+
+  if (!loginData.email.trim()) {
+    newErrors.email = "Email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(loginData.email)) {
+    newErrors.email = "Invalid Email format";
+  }
+
+  if (!loginData.phone.trim()) {
+    newErrors.phone = "Phone Number is required.";
+  } else if (!/^[0-9]{10}$/.test(loginData.phone)) {
+    newErrors.phone = "Phone must be 10 digits.";
+  }
+
+  if (!loginData.password.trim()) {
+    newErrors.password = "Password is required.";
+  } else if (loginData.password.length <= 6) {
+    newErrors.password = "Minimum 6 characters required.";
+  }
+
+  if (!loginData.Conform_pass.trim()) {
+    newErrors.Conform_pass = "Confirm Password is required.";
+  } else if (loginData.Conform_pass.length <= 6) {
+    newErrors.Conform_pass = "Minimum 6 characters required.";
+  }
+
+  // ✅ New check for matching passwords
+  if (loginData.password && loginData.Conform_pass && loginData.password !== loginData.Conform_pass) {
+    newErrors.Conform_pass = "Passwords do not match.";
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
+  const handleInputChange = (e) => {
+    //console.log(e.target.name,e.target.value)
+
+    //e.target.name = e.target.value
+    setLoginData({
+      ...loginData,
       [e.target.name]: e.target.value,
     });
-    setError({
-      ...error,
-      [e.target.name]: "",
-    });
+
+     setErrors({
+    ...errors,
+    [e.target.name]: ""
+  })
+
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (validate()) {
-      localStorage.setItem("blog_rdata", JSON.stringify(regData));
-      toast.success("done");
-      navigate("/login");
-    } else {
-      toast.error("somthing went wrong");
-    }
+    if(validate()){
+      localStorage.setItem('authData',JSON.stringify(loginData))
+      toast.success("Successfull registration...!")
+      navigate("/login")
+  }
   };
 
-  const validate = () => {
-    const newError = {};
-    if (!regData.name.trim()) {
-      newError.name = "Full name is Required.";
-    } else if (regData.name.length <= 3) {
-      newError.name = "Minimum 3 Character Required.";
-    }
-    if (!regData.email.trim()) {
-      newError.email = "Email is Required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(regData.email)) {
-      newError.email = "Invalide Email formate.";
-    }
-    if (!regData.password.trim()) {
-      newError.password = "Password is Required.";
-    } else if (regData.password.length < 6) {
-      newError.password = "Minimum 6 Character Required.";
-    }
-    if (!regData.conPassword.trim()) {
-      newError.conPassword = "Confirm Password is Required.";
-    } else if (regData.conPassword.length < 6) {
-      newError.conPassword = "Minimum 6 Character Required.";
-    } else if (regData.password !== regData.conPassword) {
-      newError.conPassword = "Password and Confirm Password are not same!!.";
-    }
-    if (!regData.phone.trim()) {
-      newError.phone = "Phone is Required.";
-    } else if (!/^[0-9]{10}$/.test(regData.phone)) {
-      newError.phone = "Phone must be in 10 digit.";
-    }
-    setError(newError);
-    return Object.keys(newError).length === 0;
-  };
-
-  return  (
-  <div className="register">
-    <div className="register-card">
-      <h1 className="register-title">Create Account</h1>
-      <p className="register-subtitle">Join Us And Start Our Journey</p>
-
-      <form className="register-form" onSubmit={handleSubmit}>
-
-        {/* Full Name */}
+  return (
+    // Name Field
+    <div className="form-container">
+      <h1 className="form-title">REGISTER</h1>
+      <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="name" className="form-label">Full Name</label>
+          <label htmlFor="name">Full Name</label>
           <input
             type="text"
-            name="name"
             id="name"
-            className="form-input"
-            placeholder="Enter Your Full Name"
-            onChange={handleChange}
+            name="name"
+            value={loginData.name}
+            placeholder="Enter your full name"
+            onChange={handleInputChange}
           />
-          {error.name && <span className="form-error">{error.name}</span>}
+          {errors.name && <span className="error-msg">{errors.name}</span>}
         </div>
 
-        {/* Email */}
         <div className="form-group">
-          <label htmlFor="email" className="form-label">Email Address</label>
+          <label htmlFor="email">Email Address</label>
           <input
             type="email"
-            name="email"
             id="email"
-            className="form-input"
-            placeholder="Enter Your Email Address"
-            onChange={handleChange}
+            name="email"
+            value={loginData.email}
+            placeholder="Enter your Email"
+            onChange={handleInputChange}
           />
-          {error.email && <span className="form-error">{error.email}</span>}
+          {errors.email && <span className="error-msg">{errors.email}</span>}
         </div>
 
-        {/* Phone */}
         <div className="form-group">
-          <label htmlFor="phone" className="form-label">Phone Number</label>
+          <label htmlFor="phone">Phone Number</label>
           <input
-            type="tel"
-            name="phone"
+            type="number"
             id="phone"
-            className="form-input"
-            placeholder="Enter Your Phone Number"
-            onChange={handleChange}
+            name="phone"
+            value={loginData.phone}
+            placeholder="Enter your Phone"
+            onChange={handleInputChange}
           />
-          {error.phone && <span className="form-error">{error.phone}</span>}
+          {errors.phone && <span className="error-msg">{errors.phone}</span>}
         </div>
 
-        {/* Password */}
-        <div className="form-group">
-          <label htmlFor="password" className="form-label">Password</label>
+       <div className="form-group">
+  <label htmlFor="password">Password</label>
+  <div style={{ position: "relative" }}>
+    <input
+      type={showPassword ? "text" : "password"}
+      id="password"
+      name="password"
+      value={loginData.password}
+      placeholder="Enter your password"
+      onChange={handleInputChange}
+      style={{ paddingRight: "40px" }}
+    />
+    <span
+      className="toggle-password"
+      onClick={() => setShowPassword(!showPassword)}
+      style={{
+        position: "absolute",
+        right: "10px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        cursor: "pointer",
+        fontSize: "18px"
+      }}
+    >
+      {showPassword ? "🐵" : "🙈"}
+    </span>
+  </div>
+  {errors.password && <span className="error-msg">{errors.password}</span>}
+</div>
+<div className="form-group">
+  <label htmlFor="Conform_pass">Conform Password</label>
+  <div style={{ position: "relative" }}>
+    <input
+      type={showConformPassword ? "text" : "password"}
+      id="Conform_pass"
+      name="Conform_pass"
+      value={loginData.Conform_pass}
+      placeholder="Enter your password"
+      onChange={handleInputChange}
+      style={{ paddingRight: "40px" }}
+    />
+    <span
+      className="toggle-password"
+      onClick={() => setShowConformPassword(!showConformPassword)}
+      style={{
+        position: "absolute",
+        right: "10px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        cursor: "pointer",
+        fontSize: "18px"
+      }}
+    >
+      {showConformPassword ? "🐵" : "🙈"}
+    </span>
+  </div>
+  {errors.Conform_pass && <span className="error-msg">{errors.Conform_pass}</span>}
+</div>
 
-          <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              id="password"
-              className="form-input password-input"
-              placeholder="******"
-              onChange={handleChange}
-            />
 
-            <span
-              className="password-toggle"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
-          </div>
-
-          {error.password && (
-            <span className="form-error">{error.password}</span>
-          )}
-        </div>
-
-        {/* Confirm Password */}
-        <div className="form-group">
-          <label htmlFor="conPassword" className="form-label">
-            Confirm Password
-          </label>
-
-          <div className="password-wrapper">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="conPassword"
-              id="conPassword"
-              className="form-input password-input"
-              placeholder="******"
-              onChange={handleChange}
-            />
-
-            <span
-              className="password-toggle"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? "🙈" : "👁️"}
-            </span>
-          </div>
-
-          {error.conPassword && (
-            <span className="form-error">{error.conPassword}</span>
-          )}
-        </div>
-
-        <button type="submit" className="register-btn">
+        <button type="submit" className="btn-primary">
           Register
         </button>
       </form>
 
-      <p className="register-footer">
-        Already have an Account? <Link to="/login">Login</Link>
+      <p className="link-text">
+        Already have an account? <Link to="/Login">Login Here</Link>
       </p>
     </div>
-  </div>
-);
-
+  )
 }
 
-export default Register;
+export default Register

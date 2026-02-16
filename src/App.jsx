@@ -1,40 +1,106 @@
-import Register from "./pages/Register";
-import Login from "./pages/Login";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
+import "./App.css";
+import Dashboard from "./pages/Dashboard.jsx";
+import Login from "./Pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import AuthGuard from "./auth/AuthGuard.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CreatePost from "./pages/CreatePost.jsx";
+import EditPost from "./pages/Editpost.jsx"; // ✅ Added
 
-const DefaultRouter = () => {
-  const data = JSON.parse(localStorage.getItem("blog_rdata"));
-  if (data) {
-    return <Navigate to="/login" replace />;
-  } else {
-    <Navigate to="/register" replace />;
-  }
-}
 function App() {
   const route = createBrowserRouter([
     {
       path: "/",
-      element: <DefaultRouter />,
+      element: (
+        <AuthGuard required={false}>
+          <DefaultRoute />
+        </AuthGuard>
+      ),
     },
     {
       path: "/login",
-      element: <Login />,
+      element: (
+        <AuthGuard required={false}>
+          <Login />
+        </AuthGuard>
+      ),
     },
     {
       path: "/register",
-      element: <Register />,
+      element: (
+        <AuthGuard required={false}>
+          <Register />
+        </AuthGuard>
+      ),
     },
     {
-      path: "/Dashboard",
-      element: <Dashboard />,
+      path: "/dashboard",
+      element: (
+        <AuthGuard required={true}>
+          <Dashboard />
+        </AuthGuard>
+      ),
     },
-  ])
-  return <RouterProvider router={route} />;
+    {
+      path: "/create-post",
+      element: (
+        <AuthGuard required={true}>
+          <CreatePost />
+        </AuthGuard>
+      ),
+    },
+    {
+      path: "/edit-post/:id", // ✅ Dynamic Route
+      element: (
+        <AuthGuard required={true}>
+          <EditPost />
+        </AuthGuard>
+      ),
+    },
+    {
+      path: "*",
+      element: (
+        <div
+          style={{
+            textAlign: "center",
+            padding: "100px",
+            color: "white",
+          }}
+        >
+          <h1>404 - Page Not Found</h1>
+          <p>The page you are looking for does not exist.</p>
+        </div>
+      ),
+    },
+  ]);
+
+  return (
+    <>
+      <RouterProvider router={route} />
+      <ToastContainer
+        position="top-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </>
+  );
 }
 
-export default App
+const DefaultRoute = () => {
+  return <Navigate to="/dashboard" replace />;
+};
+
+export default App;
