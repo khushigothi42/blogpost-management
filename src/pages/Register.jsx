@@ -24,7 +24,7 @@ const validate = () => {
 
   if (!loginData.name.trim()) {
     newErrors.name = "Full name is required.";
-  } else if (loginData.name.length <= 6) {
+  } else if (loginData.name.length <= 3) {
     newErrors.name = "Minimum 6 characters required.";
   }
 
@@ -42,14 +42,14 @@ const validate = () => {
 
   if (!loginData.password.trim()) {
     newErrors.password = "Password is required.";
-  } else if (loginData.password.length <= 6) {
-    newErrors.password = "Minimum 6 characters required.";
+  } else if (loginData.password.length <= 3) {
+    newErrors.password = "Minimum 3 characters required.";
   }
 
   if (!loginData.Conform_pass.trim()) {
     newErrors.Conform_pass = "Confirm Password is required.";
-  } else if (loginData.Conform_pass.length <= 6) {
-    newErrors.Conform_pass = "Minimum 6 characters required.";
+  } else if (loginData.Conform_pass.length <= 3) {
+    newErrors.Conform_pass = "Minimum 3 characters required.";
   }
 
   // ✅ New check for matching passwords
