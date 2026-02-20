@@ -10,9 +10,24 @@ import Favorites from "./Favorites";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
+  const [favorites , setFavorites]= useState([]);
+  const Favorites=useState()
   const [loading, setLoading] = useState(true);
   const handleClick = (postId) => {
   navigate(`/post-details/${postId}`);
+};
+
+const toggleFavorites= (e,postId)=>{
+  let newFavorites;
+  if(favorites.includes(postId)){
+    newFavorites=favorites.filter(id => id!== postId);
+    toast.info("remove from favorites");
+  } else{
+    newFavorites = [...favorites,postId];
+    toast.success("addes to favorites!");
+  }
+  setFavorites(newFavorites);
+  localStorage.setItem('favorites',JSON.stringify(newFavorites));
 };
 
   // Fetch all posts from db.json
@@ -32,6 +47,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchPosts();
+    const savedFavorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    setFavorites(savedFavorites)
   }, []);
 
   const handleLogout = () => {
@@ -117,8 +134,9 @@ const Dashboard = () => {
                       alt={post.title}
                       className="post-card-image"
                     />
-                    <button className={`favorites-btn ${Favorites.includes(post.id)?'active':''}`}>
-                      <FaStar size={22} color="#ffffff"/>
+                    <button className={`favorites-btn ${Favorites.includes(post.id)?'active':''}`}
+                  onClick={(e) => toggleFavorites(e,post.id)}>
+                      <FaStar size={22} color="#e3e3d8"/>
                     </button>
 
                     <div className="post-actions">
